@@ -10,13 +10,7 @@ use std::net::SocketAddr;
 
 pub const DEFAULT_SCRIPTS_SHEEBANG: &str = "#!/bin/sh";
 
-pub const DEFAULT_SCRIPTS: [&str; 5] = [
-    "prepare.sh",
-    "check.sh",
-    "build.sh",
-    "package.sh",
-    "install.sh",
-];
+pub const SCRIPT: &str = "uvd.sh";
 
 #[derive(Serialize)]
 struct SystemStatus {
@@ -55,14 +49,6 @@ pub enum LicenseType {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Scripts {
-    freebsd: Vec<String>,
-    netbsd: Vec<String>,
-    openbsd: Vec<String>,
-    linux: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct Sign {
     developer: String,
     server: String,
@@ -80,11 +66,7 @@ pub struct Uvd {
     hash: HashMap<String, String>,
     version: String,
     arch: Vec<String>,
-    update: Scripts,
-    install: Scripts,
-    uninstall: Scripts,
-    reinstall: Scripts,
-    check: Scripts,
+    script: String,
     license: LicenseType,
 }
 
@@ -144,37 +126,8 @@ mod test {
             hash: HashMap::new(),
             version: "0.0.0".to_string(),
             arch: vec!["x86_64".to_string()],
-            install: crate::Scripts {
-                freebsd: vec!["install.sh".to_string()],
-                netbsd: vec!["install.sh".to_string()],
-                openbsd: vec!["install.sh".to_string()],
-                linux: vec!["install.sh".to_string()],
-            },
-            uninstall: crate::Scripts {
-                freebsd: vec!["uninstall.sh".to_string()],
-                netbsd: vec!["uninstall.sh".to_string()],
-                openbsd: vec!["uninstall.sh".to_string()],
-                linux: vec!["uninstall.sh".to_string()],
-            },
-            update: crate::Scripts {
-                freebsd: vec!["update.sh".to_string()],
-                netbsd: vec!["update.sh".to_string()],
-                openbsd: vec!["update.sh".to_string()],
-                linux: vec!["update.sh".to_string()],
-            },
-            reinstall: crate::Scripts {
-                freebsd: vec!["reinstall.sh".to_string()],
-                netbsd: vec!["reinstall.sh".to_string()],
-                openbsd: vec!["reinstall.sh".to_string()],
-                linux: vec!["reinstall.sh".to_string()],
-            },
-            check: crate::Scripts {
-                freebsd: vec!["check.sh".to_string()],
-                netbsd: vec!["check.sh".to_string()],
-                openbsd: vec!["check.sh".to_string()],
-                linux: vec!["check.sh".to_string()],
-            },
             license: LicenseType::Free(crate::OpenSourceLicense::AgplV3),
+            script: crate::SCRIPT.to_string(),
         }
     }
     #[test]
@@ -200,30 +153,7 @@ mod test {
     #[test]
     pub fn test_scripts() {
         let uvd = get_uvd();
-        assert_eq!(uvd.install.freebsd.len(), 1);
-        assert_eq!(uvd.install.netbsd.len(), 1);
-        assert_eq!(uvd.install.openbsd.len(), 1);
-        assert_eq!(uvd.install.linux.len(), 1);
-
-        assert_eq!(uvd.uninstall.freebsd.len(), 1);
-        assert_eq!(uvd.uninstall.netbsd.len(), 1);
-        assert_eq!(uvd.uninstall.openbsd.len(), 1);
-        assert_eq!(uvd.uninstall.linux.len(), 1);
-
-        assert_eq!(uvd.update.freebsd.len(), 1);
-        assert_eq!(uvd.update.netbsd.len(), 1);
-        assert_eq!(uvd.update.openbsd.len(), 1);
-        assert_eq!(uvd.update.linux.len(), 1);
-
-        assert_eq!(uvd.reinstall.freebsd.len(), 1);
-        assert_eq!(uvd.reinstall.netbsd.len(), 1);
-        assert_eq!(uvd.reinstall.openbsd.len(), 1);
-        assert_eq!(uvd.reinstall.linux.len(), 1);
-
-        assert_eq!(uvd.check.freebsd.len(), 1);
-        assert_eq!(uvd.check.netbsd.len(), 1);
-        assert_eq!(uvd.check.openbsd.len(), 1);
-        assert_eq!(uvd.check.linux.len(), 1);
+        assert_eq!(crate::SCRIPT, uvd.script);
     }
     #[test]
     pub fn test_version() {
